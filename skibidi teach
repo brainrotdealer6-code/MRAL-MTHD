@@ -1,0 +1,94 @@
+-- Brainrot Stealer v3.0 (Zip-Back + Lag Trail + Base TP)
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local StatusLabel = Instance.new("TextLabel")
+local ZipStealBtn = Instance.new("TextButton")
+local SetBaseBtn = Instance.new("TextButton")
+local LagTrailBtn = Instance.new("TextButton")
+
+local BaseLocation = nil
+local LagActive = false
+
+-- UI Setup
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+MainFrame.Size = UDim2.new(0, 300, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -150)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Parent = MainFrame
+Title.Text = "BRAINROT ZIP-STEALER"
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.Font = Enum.Font.SourceSansBold
+
+StatusLabel.Parent = MainFrame
+StatusLabel.Text = "Set Base before stealing!"
+StatusLabel.Position = UDim2.new(0, 0, 0.85, 0)
+StatusLabel.Size = UDim2.new(1, 0, 0, 30)
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- Set Base Button
+SetBaseBtn.Parent = MainFrame
+SetBaseBtn.Text = "STEP 1: SET BASE POS"
+SetBaseBtn.Size = UDim2.new(0.8, 0, 0, 40)
+SetBaseBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
+SetBaseBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+
+-- Auto Steal & Zip Button
+ZipStealBtn.Parent = MainFrame
+ZipStealBtn.Text = "STEP 2: STEAL & ZIP"
+ZipStealBtn.Size = UDim2.new(0.8, 0, 0, 40)
+ZipStealBtn.Position = UDim2.new(0.1, 0, 0.4, 0)
+ZipStealBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+
+-- Lag/Fake Ping Button
+LagTrailBtn.Parent = MainFrame
+LagTrailBtn.Text = "LAG TRAIL: OFF"
+LagTrailBtn.Size = UDim2.new(0.8, 0, 0, 40)
+LagTrailBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
+LagTrailBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
+
+-- Functionality
+SetBaseBtn.MouseButton1Click:Connect(function()
+    BaseLocation = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    StatusLabel.Text = "Base Set! Ready to Zip."
+    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+end)
+
+ZipStealBtn.MouseButton1Click:Connect(function()
+    if not BaseLocation then
+        StatusLabel.Text = "ERROR: Set Base first!"
+        return
+    end
+    
+    StatusLabel.Text = "Stealing Brainrot..."
+    task.wait(0.5) -- Simulated steal time
+    
+    -- Fast Teleport Back
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = BaseLocation
+    StatusLabel.Text = "ZIP SUCCESS: Returned to Base"
+end)
+
+LagTrailBtn.MouseButton1Click:Connect(function()
+    LagActive = not LagActive
+    if LagActive then
+        LagTrailBtn.Text = "LAG TRAIL: ON"
+        LagTrailBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        task.spawn(function()
+            while LagActive do
+                -- This creates a "stutter" effect for others
+                game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
+                task.wait(0.1)
+                game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+                task.wait(0.2)
+            end
+        end)
+    else
+        LagTrailBtn.Text = "LAG TRAIL: OFF"
+        LagTrailBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
+    end
+end)
