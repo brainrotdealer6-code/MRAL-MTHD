@@ -1,121 +1,57 @@
--- Fly & Fling Controller Add-on
+-- 99 Nights in the Forest: Diamond Hunter
 local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
+local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local SpeedLabel = Instance.new("TextLabel")
-local NameInput = Instance.new("TextBox")
-local PlusBtn = Instance.new("TextButton")
-local MinusBtn = Instance.new("TextButton")
-local FlyBtn = Instance.new("TextButton")
-local FlingBtn = Instance.new("TextButton")
-
-local currentSpeed = 50
-local flying = false
-local flinging = false
+local Status = Instance.new("TextLabel")
+local CollectBtn = Instance.new("TextButton")
 
 -- UI Setup
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Frame.Size = UDim2.new(0, 250, 0, 300)
-Frame.Position = UDim2.new(0.1, 0, 0.5, -150)
-Frame.Active = true
-Frame.Draggable = true
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 20, 40)
+MainFrame.Size = UDim2.new(0, 250, 0, 150)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -75)
+MainFrame.Active = true
+MainFrame.Draggable = true
 
-Title.Parent = Frame
-Title.Text = "FLY & FLING"
+Title.Parent = MainFrame
+Title.Text = "DIAMOND HUNTER"
 Title.Size = UDim2.new(1, 0, 0, 40)
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.Font = Enum.Font.GothamBold
 
-NameInput.Parent = Frame
-NameInput.PlaceholderText = "Type Player Name..."
-NameInput.Size = UDim2.new(0.8, 0, 0, 30)
-NameInput.Position = UDim2.new(0.1, 0, 0.2, 0)
+Status.Parent = MainFrame
+Status.Text = "Waiting..."
+Status.Position = UDim2.new(0, 0, 0.7, 0)
+Status.Size = UDim2.new(1, 0, 0, 30)
+Status.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-SpeedLabel.Parent = Frame
-SpeedLabel.Text = "Speed: 50"
-SpeedLabel.Position = UDim2.new(0, 0, 0.35, 0)
-SpeedLabel.Size = UDim2.new(1, 0, 0, 30)
-SpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+CollectBtn.Parent = MainFrame
+CollectBtn.Text = "TP TO DIAMONDS"
+CollectBtn.Size = UDim2.new(0.8, 0, 0, 40)
+CollectBtn.Position = UDim2.new(0.1, 0, 0.35, 0)
+CollectBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
 
--- Speed Controls
-PlusBtn.Parent = Frame
-PlusBtn.Text = "+"
-PlusBtn.Size = UDim2.new(0.2, 0, 0, 30)
-PlusBtn.Position = UDim2.new(0.6, 0, 0.45, 0)
-PlusBtn.MouseButton1Click:Connect(function()
-    currentSpeed = currentSpeed + 10
-    SpeedLabel.Text = "Speed: " .. currentSpeed
-end)
-
-MinusBtn.Parent = Frame
-MinusBtn.Text = "-"
-MinusBtn.Size = UDim2.new(0.2, 0, 0, 30)
-MinusBtn.Position = UDim2.new(0.2, 0, 0.45, 0)
-MinusBtn.MouseButton1Click:Connect(function()
-    currentSpeed = math.max(10, currentSpeed - 10)
-    SpeedLabel.Text = "Speed: " .. currentSpeed
-end)
-
--- Fly Logic
-FlyBtn.Parent = Frame
-FlyBtn.Text = "FLY ME"
-FlyBtn.Size = UDim2.new(0.8, 0, 0, 40)
-FlyBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
-FlyBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
-
-FlyBtn.MouseButton1Click:Connect(function()
-    flying = not flying
-    local lp = game.Players.LocalPlayer
-    local char = lp.Character
-    if flying then
-        FlyBtn.Text = "STOP FLY"
-        local bv = Instance.new("BodyVelocity", char.HumanoidRootPart)
-        bv.Velocity = Vector3.new(0, 0, 0)
-        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        task.spawn(function()
-            while flying do
-                bv.Velocity = char.Humanoid.MoveDirection * currentSpeed
-                task.wait()
-            end
-            bv:Destroy()
-        end)
-    else
-        FlyBtn.Text = "FLY ME"
-    end
-end)
-
--- Fling Logic (Choose Target)
-FlingBtn.Parent = Frame
-FlingBtn.Text = "FLING TARGET"
-FlingBtn.Size = UDim2.new(0.8, 0, 0, 40)
-FlingBtn.Position = UDim2.new(0.1, 0, 0.8, 0)
-FlingBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-
-FlingBtn.MouseButton1Click:Connect(function()
-    local targetName = NameInput.Text:lower()
-    local targetPlayer = nil
+-- Logic to find and TP to Diamond Nodes
+CollectBtn.MouseButton1Click:Connect(function()
+    local found = false
+    Status.Text = "Scanning Forest..."
     
-    for _, p in pairs(game.Players:GetPlayers()) do
-        if p.Name:lower():find(targetName) then
-            targetPlayer = p
-            break
+    for _, v in pairs(workspace:GetDescendants()) do
+        -- Searches for parts named Diamond or DiamondNode
+        if (v.Name:find("Diamond") or v.Name:find("Gem")) and v:IsA("BasePart") then
+            found = true
+            Status.Text = "Diamond Found! Teleporting..."
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0, 3, 0)
+            task.wait(1) -- Wait to mine
         end
     end
     
-    if targetPlayer and targetPlayer.Character then
-        StatusLabel.Text = "Flinging: " .. targetPlayer.Name
-        local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
-        local oldPos = hrp.CFrame
-        
-        -- Extreme Spinning to Fling
-        local th = Instance.new("BodyAngularVelocity", hrp)
-        th.AngularVelocity = Vector3.new(0, 99999, 0)
-        th.MaxTorque = Vector3.new(0, math.huge, 0)
-        
-        hrp.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
-        task.wait(0.5)
-        th:Destroy()
-        hrp.CFrame = oldPos
+    if not found then
+        Status.Text = "No Diamonds found right now."
+        Status.TextColor3 = Color3.fromRGB(255, 100, 100)
+    else
+        Status.Text = "Finished Scan."
+        Status.TextColor3 = Color3.fromRGB(0, 255, 0)
     end
 end)
