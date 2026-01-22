@@ -1,90 +1,76 @@
--- Brainrot Zip-Stealer v3.1 (Auto-Base Detect)
+-- Brainrot Stealer v4.0 (Boomerang: Base -> Wait -> Return)
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 local StatusLabel = Instance.new("TextLabel")
-local AutoDetectBtn = Instance.new("TextButton")
-local StealZipBtn = Instance.new("TextButton")
+local SetBaseBtn = Instance.new("TextButton")
+local BoomerangBtn = Instance.new("TextButton")
 
-local MyBasePart = nil
+local BaseLocation = nil
+local TargetLocation = nil
 
 -- UI Setup
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 0, 40) -- Dark Purple
+MainFrame.BackgroundColor3 = Color3.fromRGB(10, 30, 10) -- Dark Green Theme
 MainFrame.Size = UDim2.new(0, 300, 0, 220)
 MainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
 Title.Parent = MainFrame
-Title.Text = "BRAINROT AUTO-ZIP"
+Title.Text = "BOOMERANG STEALER"
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Font = Enum.Font.GothamBold
+Title.Font = Enum.Font.SourceSansBold
 
 StatusLabel.Parent = MainFrame
-StatusLabel.Text = "Status: Not Connected"
+StatusLabel.Text = "1. Set Base | 2. Go Steal"
 StatusLabel.Position = UDim2.new(0, 0, 0.8, 0)
 StatusLabel.Size = UDim2.new(1, 0, 0, 30)
-StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Button 1: Find My Base
-AutoDetectBtn.Parent = MainFrame
-AutoDetectBtn.Text = "FIND MY BASE"
-AutoDetectBtn.Size = UDim2.new(0.8, 0, 0, 40)
-AutoDetectBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
-AutoDetectBtn.BackgroundColor3 = Color3.fromRGB(70, 0, 130)
+-- Button: Set Base
+SetBaseBtn.Parent = MainFrame
+SetBaseBtn.Text = "SET BASE LOCATION"
+SetBaseBtn.Size = UDim2.new(0.8, 0, 0, 40)
+SetBaseBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
+SetBaseBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
--- Button 2: Steal & Zip
-StealZipBtn.Parent = MainFrame
-StealZipBtn.Text = "STEAL & ZIP HOME"
-StealZipBtn.Size = UDim2.new(0.8, 0, 0, 40)
-StealZipBtn.Position = UDim2.new(0.1, 0, 0.5, 0)
-StealZipBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+-- Button: Boomerang
+BoomerangBtn.Parent = MainFrame
+BoomerangBtn.Text = "BOOMERANG ZIP"
+BoomerangBtn.Size = UDim2.new(0.8, 0, 0, 40)
+BoomerangBtn.Position = UDim2.new(0.1, 0, 0.55, 0)
+BoomerangBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
 
--- Function: Find the Player's Base
-AutoDetectBtn.MouseButton1Click:Connect(function()
-    StatusLabel.Text = "Scanning Bases..."
-    -- Scans Workspace for the folder usually containing bases
-    local bases = workspace:FindFirstChild("Bases") or workspace:FindFirstChild("Plots")
-    
-    if bases then
-        for _, base in pairs(bases:GetChildren()) do
-            -- Looks for a base with your name or ID on it
-            if base:FindFirstChild("Owner") and base.Owner.Value == game.Players.LocalPlayer.Name then
-                MyBasePart = base:FindFirstChild("MainPart") or base:FindFirstChild("Floor")
-                StatusLabel.Text = "Base Found: " .. base.Name
-                StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-                return
-            end
-        end
-    end
-    
-    -- Backup: If no owner tag is found, it uses your current position as "Base"
-    MyBasePart = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    StatusLabel.Text = "Manual Base Set (Stand at Base!)"
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+-- Functionality
+SetBaseBtn.MouseButton1Click:Connect(function()
+    BaseLocation = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    StatusLabel.Text = "Base Saved! Now go to target."
+    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
 end)
 
--- Function: Zip Back
-StealZipBtn.MouseButton1Click:Connect(function()
-    if not MyBasePart then
-        StatusLabel.Text = "ERROR: Find Base First!"
-        StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+BoomerangBtn.MouseButton1Click:Connect(function()
+    if not BaseLocation then
+        StatusLabel.Text = "ERROR: Set Base first!"
         return
     end
-    
-    StatusLabel.Text = "Stealing & Zipping..."
-    task.wait(0.1) -- Minimal delay for "Fast" return
-    
-    -- Teleport logic
+
     local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
-    if typeof(MyBasePart) == "Instance" then
-        hrp.CFrame = MyBasePart.CFrame + Vector3.new(0, 3, 0)
-    else
-        hrp.CFrame = MyBasePart
-    end
     
-    StatusLabel.Text = "Zipped Home Safely!"
+    -- 1. Save where you are right now (The Steal Spot)
+    TargetLocation = hrp.CFrame
+    
+    -- 2. Teleport to Base
+    StatusLabel.Text = "Zipping to Base..."
+    hrp.CFrame = BaseLocation
+    
+    -- 3. Wait 2 seconds (Make sure it registers)
+    task.wait(2)
+    
+    -- 4. Teleport back to Target
+    StatusLabel.Text = "Returning to Target..."
+    hrp.CFrame = TargetLocation
+    StatusLabel.Text = "Boomerang Success!"
 end)
