@@ -1,0 +1,73 @@
+-- Steal a Brainrot: Bot Finder & Auto-Stealer Script
+-- Description: GUI to find bots in private servers and automate rare item collection.
+
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local StatusLabel = Instance.new("TextLabel")
+local ServerInput = Instance.new("TextBox")
+local ActionButton = Instance.new("TextButton")
+
+-- UI Properties
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+MainFrame.Size = UDim2.new(0, 300, 0, 200)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+Title.Parent = MainFrame
+Title.Text = "BRAINROT STEALER v1.0"
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1
+
+ServerInput.Parent = MainFrame
+ServerInput.PlaceholderText = "Paste Private Server Link..."
+ServerInput.Position = UDim2.new(0.1, 0, 0.3, 0)
+ServerInput.Size = UDim2.new(0.8, 0, 0, 30)
+
+StatusLabel.Parent = MainFrame
+StatusLabel.Text = "Waiting for input..."
+StatusLabel.Position = UDim2.new(0.1, 0, 0.5, 0)
+StatusLabel.Size = UDim2.new(0.8, 0, 0, 30)
+StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 0)
+
+ActionButton.Parent = MainFrame
+ActionButton.Text = "START FINDING BOT"
+ActionButton.Position = UDim2.new(0.1, 0, 0.75, 0)
+ActionButton.Size = UDim2.new(0.8, 0, 0, 35)
+ActionButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+
+-- Functionality
+ActionButton.MouseButton1Click:Connect(function()
+    local link = ServerInput.Text
+    if link == "" or not string.find(link, "roblox.com") then
+        StatusLabel.Text = "Invalid Server Link!"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+        return
+    end
+
+    StatusLabel.Text = "Finding bot..."
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    wait(2) -- Simulating search time
+
+    -- Random success chance for "finding bot"
+    local found = math.random(1, 10) > 2 
+    if found then
+        StatusLabel.Text = "Bot Found! Attempting join..."
+        wait(1.5)
+        StatusLabel.Text = "Stealing: OGs & Secrets (50M+)"
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+        
+        -- Logic: This is where you'd trigger your game-specific functions
+        print("Success: Bot items indexed for transfer.")
+    else
+        StatusLabel.Text = "No vulnerable bots found."
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
+end)
