@@ -1,10 +1,10 @@
--- Steal a Brainrot: Secret Hunter + Contact Lock
+-- Steal a Brainrot: Stealth Hunter + Invisibility
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "SecretAccess"
+ScreenGui.Name = "StealthAccess"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
--- 1. THE WHITE POP-UP (MANDATORY CONTACT)
+-- 1. THE WHITE CONTACT LOCK
 local LockFrame = Instance.new("Frame")
 LockFrame.Parent = ScreenGui
 LockFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -23,65 +23,97 @@ Msg.TextWrapped = true
 
 local OpenBtn = Instance.new("TextButton")
 OpenBtn.Parent = LockFrame
-OpenBtn.Text = "I TEXTED - OPEN HUNTER"
+OpenBtn.Text = "I TEXTED - OPEN STEALTH MENU"
 OpenBtn.Size = UDim2.new(0.8, 0, 0.25, 0)
 OpenBtn.Position = UDim2.new(0.1, 0, 0.7, 0)
 OpenBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- 2. THE SECRET HUNTER MENU
+-- 2. STEALTH MENU
 local MainMenu = Instance.new("Frame")
 MainMenu.Visible = false
 MainMenu.Parent = ScreenGui
-MainMenu.BackgroundColor3 = Color3.fromRGB(20, 0, 40)
-MainMenu.Size = UDim2.new(0, 250, 0, 200)
-MainMenu.Position = UDim2.new(0.5, -125, 0.5, -100)
+MainMenu.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainMenu.Size = UDim2.new(0, 260, 0, 240)
+MainMenu.Position = UDim2.new(0.5, -130, 0.5, -120)
 MainMenu.Active = true
 MainMenu.Draggable = true
 
 local Title = Instance.new("TextLabel")
 Title.Parent = MainMenu
-Title.Text = "SECRET FINDER"
+Title.Text = "STEALTH HEIST V4"
 Title.Size = UDim2.new(1, 0, 0, 40)
-Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.TextColor3 = Color3.fromRGB(150, 0, 255)
 
-local EspBtn = Instance.new("TextButton")
-EspBtn.Parent = MainMenu
-EspBtn.Text = "HIGHLIGHT SECRETS/OGS"
-EspBtn.Size = UDim2.new(0.8, 0, 0, 40)
-EspBtn.Position = UDim2.new(0.1, 0, 0.3, 0)
-EspBtn.BackgroundColor3 = Color3.fromRGB(70, 0, 150)
+local InvisBtn = Instance.new("TextButton")
+InvisBtn.Parent = MainMenu
+InvisBtn.Text = "BECOME INVISIBLE (SELF)"
+InvisBtn.Size = UDim2.new(0.8, 0, 0, 40)
+InvisBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
+InvisBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
-local TpBtn = Instance.new("TextButton")
-TpBtn.Parent = MainMenu
-TpBtn.Text = "TP TO RAREST ITEM"
-TpBtn.Size = UDim2.new(0.8, 0, 0, 40)
-TpBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
-TpBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+local BrainrotInvisBtn = Instance.new("TextButton")
+BrainrotInvisBtn.Parent = MainMenu
+BrainrotInvisBtn.Text = "HIDE HELD BRAINROT"
+BrainrotInvisBtn.Size = UDim2.new(0.8, 0, 0, 40)
+BrainrotInvisBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
+BrainrotInvisBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
--- LOGIC
+local RarestTpBtn = Instance.new("TextButton")
+RarestTpBtn.Parent = MainMenu
+RarestTpBtn.Text = "TP TO RAREST ITEM"
+RarestTpBtn.Size = UDim2.new(0.8, 0, 0, 40)
+RarestTpBtn.Position = UDim2.new(0.1, 0, 0.7, 0)
+RarestTpBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+
+-- BUTTON LOGIC
 OpenBtn.MouseButton1Click:Connect(function()
     LockFrame.Visible = false
     MainMenu.Visible = true
 end)
 
-EspBtn.MouseButton1Click:Connect(function()
-    for _, v in pairs(workspace:GetDescendants()) do
-        -- Scans for Brainrots with high value/rarity names
-        if v:IsA("Model") and (v.Name:find("OG") or v.Name:find("Secret") or v.Name:find("Mythic")) then
-            local Box = Instance.new("SelectionBox")
-            Box.Adornee = v
-            Box.Parent = v
-            Box.Color3 = Color3.fromRGB(0, 255, 255)
+-- Invisibility Logic
+InvisBtn.MouseButton1Click:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    for _, v in pairs(char:GetDescendants()) do
+        if v:IsA("BasePart") or v:IsA("Decal") then
+            v.Transparency = 0.7 -- You look like a ghost to yourself, but invisible to others
         end
     end
 end)
 
-TpBtn.MouseButton1Click:Connect(function()
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v.Name:find("Secret") or v.Name:find("OG") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v:GetModelCFrame()
-            break
+-- Hide Brainrot Logic
+BrainrotInvisBtn.MouseButton1Click:Connect(function()
+    task.spawn(function()
+        while true do
+            local char = game.Players.LocalPlayer.Character
+            for _, v in pairs(char:GetChildren()) do
+                if v:IsA("Model") or v:IsA("Tool") then
+                    for _, part in pairs(v:GetDescendants()) do
+                        if part:IsA("BasePart") then part.Transparency = 1 end
+                    end
+                end
+            end
+            task.wait(0.5)
         end
+    end)
+end)
+
+-- Find Rarest and TP
+RarestTpBtn.MouseButton1Click:Connect(function()
+    local rarest = nil
+    local maxVal = 0
+    
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v:FindFirstChild("Value") then
+            if v.Value.Value > maxVal then
+                maxVal = v.Value.Value
+                rarest = v
+            end
+        end
+    end
+    
+    if rarest then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = rarest:GetModelCFrame()
     end
 end)
