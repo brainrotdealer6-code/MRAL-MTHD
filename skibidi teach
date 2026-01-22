@@ -1,80 +1,87 @@
--- Playground Basketball: Baller Menu
+-- Steal a Brainrot: Secret Hunter + Contact Lock
 local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local Title = Instance.new("TextLabel")
-local AutoShootBtn = Instance.new("TextButton")
-local AutoDunkBtn = Instance.new("TextButton")
-local Status = Instance.new("TextLabel")
-
--- UI Setup
+ScreenGui.Name = "SecretAccess"
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.Size = UDim2.new(0, 250, 0, 220)
-MainFrame.Position = UDim2.new(0.5, -125, 0.5, -110)
-MainFrame.Active = true
-MainFrame.Draggable = true
+ScreenGui.ResetOnSpawn = false
 
-Title.Parent = MainFrame
-Title.Text = "BALLER MENU V1"
+-- 1. THE WHITE POP-UP (MANDATORY CONTACT)
+local LockFrame = Instance.new("Frame")
+LockFrame.Parent = ScreenGui
+LockFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+LockFrame.Size = UDim2.new(0, 400, 0, 180)
+LockFrame.Position = UDim2.new(0.5, -200, 0.5, -90)
+LockFrame.BorderSizePixel = 4
+
+local Msg = Instance.new("TextLabel")
+Msg.Parent = LockFrame
+Msg.Text = "text 786-366-7302 for the accual script thank you"
+Msg.Size = UDim2.new(1, 0, 0.6, 0)
+Msg.TextColor3 = Color3.fromRGB(0, 0, 0)
+Msg.TextSize = 20
+Msg.Font = Enum.Font.SourceSansBold
+Msg.TextWrapped = true
+
+local OpenBtn = Instance.new("TextButton")
+OpenBtn.Parent = LockFrame
+OpenBtn.Text = "I TEXTED - OPEN HUNTER"
+OpenBtn.Size = UDim2.new(0.8, 0, 0.25, 0)
+OpenBtn.Position = UDim2.new(0.1, 0, 0.7, 0)
+OpenBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+OpenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+-- 2. THE SECRET HUNTER MENU
+local MainMenu = Instance.new("Frame")
+MainMenu.Visible = false
+MainMenu.Parent = ScreenGui
+MainMenu.BackgroundColor3 = Color3.fromRGB(20, 0, 40)
+MainMenu.Size = UDim2.new(0, 250, 0, 200)
+MainMenu.Position = UDim2.new(0.5, -125, 0.5, -100)
+MainMenu.Active = true
+MainMenu.Draggable = true
+
+local Title = Instance.new("TextLabel")
+Title.Parent = MainMenu
+Title.Text = "SECRET FINDER"
 Title.Size = UDim2.new(1, 0, 0, 40)
-Title.TextColor3 = Color3.fromRGB(255, 165, 0) -- Basketball Orange
-Title.Font = Enum.Font.SourceSansBold
+Title.TextColor3 = Color3.fromRGB(0, 255, 255)
 
-Status.Parent = MainFrame
-Status.Text = "Status: Ready"
-Status.Position = UDim2.new(0, 0, 0.8, 0)
-Status.Size = UDim2.new(1, 0, 0, 30)
-Status.TextColor3 = Color3.fromRGB(255, 255, 255)
+local EspBtn = Instance.new("TextButton")
+EspBtn.Parent = MainMenu
+EspBtn.Text = "HIGHLIGHT SECRETS/OGS"
+EspBtn.Size = UDim2.new(0.8, 0, 0, 40)
+EspBtn.Position = UDim2.new(0.1, 0, 0.3, 0)
+EspBtn.BackgroundColor3 = Color3.fromRGB(70, 0, 150)
 
--- Auto Shoot / Aimlock Button
-AutoShootBtn.Parent = MainFrame
-AutoShootBtn.Text = "PERFECT AIMLOCK (SHOOT)"
-AutoShootBtn.Size = UDim2.new(0.8, 0, 0, 40)
-AutoShootBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
-AutoShootBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
+local TpBtn = Instance.new("TextButton")
+TpBtn.Parent = MainMenu
+TpBtn.Text = "TP TO RAREST ITEM"
+TpBtn.Size = UDim2.new(0.8, 0, 0, 40)
+TpBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
+TpBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
 
--- Auto Dunk Button
-AutoDunkBtn.Parent = MainFrame
-AutoDunkBtn.Text = "INSTANT DUNK"
-AutoDunkBtn.Size = UDim2.new(0.8, 0, 0, 40)
-AutoDunkBtn.Position = UDim2.new(0.1, 0, 0.5, 0)
-AutoDunkBtn.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+-- LOGIC
+OpenBtn.MouseButton1Click:Connect(function()
+    LockFrame.Visible = false
+    MainMenu.Visible = true
+end)
 
--- Logic
-local function getHoop()
-    -- Attempts to find the closest basketball hoop
+EspBtn.MouseButton1Click:Connect(function()
     for _, v in pairs(workspace:GetDescendants()) do
-        if v.Name == "Hoop" or v.Name == "Rim" or v.Name == "SwishPart" then
-            return v
+        -- Scans for Brainrots with high value/rarity names
+        if v:IsA("Model") and (v.Name:find("OG") or v.Name:find("Secret") or v.Name:find("Mythic")) then
+            local Box = Instance.new("SelectionBox")
+            Box.Adornee = v
+            Box.Parent = v
+            Box.Color3 = Color3.fromRGB(0, 255, 255)
         end
-    end
-    return nil
-end
-
-AutoShootBtn.MouseButton1Click:Connect(function()
-    local hoop = getHoop()
-    if hoop then
-        Status.Text = "Aiming at Hoop..."
-        -- Force the camera/character to face the hoop for a green release
-        game.Workspace.CurrentCamera.CFrame = CFrame.new(game.Workspace.CurrentCamera.CFrame.Position, hoop.Position)
-        task.wait(0.1)
-        Status.Text = "SHOT LOCKED"
-    else
-        Status.Text = "No Hoop Found!"
     end
 end)
 
-AutoDunkBtn.MouseButton1Click:Connect(function()
-    local hoop = getHoop()
-    if hoop then
-        Status.Text = "Teleporting to Dunk..."
-        local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
-        -- Zips you directly to the rim for a 100% dunk
-        hrp.CFrame = hoop.CFrame + Vector3.new(0, 5, 0)
-        task.wait(0.5)
-        Status.Text = "DUNK COMPLETE"
-    else
-        Status.Text = "No Hoop Found!"
+TpBtn.MouseButton1Click:Connect(function()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v.Name:find("Secret") or v.Name:find("OG") then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v:GetModelCFrame()
+            break
+        end
     end
 end)
