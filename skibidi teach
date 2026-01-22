@@ -1,94 +1,90 @@
--- Brainrot Stealer v3.0 (Zip-Back + Lag Trail + Base TP)
+-- Brainrot Zip-Stealer v3.1 (Auto-Base Detect)
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
 local StatusLabel = Instance.new("TextLabel")
-local ZipStealBtn = Instance.new("TextButton")
-local SetBaseBtn = Instance.new("TextButton")
-local LagTrailBtn = Instance.new("TextButton")
+local AutoDetectBtn = Instance.new("TextButton")
+local StealZipBtn = Instance.new("TextButton")
 
-local BaseLocation = nil
-local LagActive = false
+local MyBasePart = nil
 
 -- UI Setup
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-MainFrame.Size = UDim2.new(0, 300, 0, 300)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -150)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 0, 40) -- Dark Purple
+MainFrame.Size = UDim2.new(0, 300, 0, 220)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
 Title.Parent = MainFrame
-Title.Text = "BRAINROT ZIP-STEALER"
+Title.Text = "BRAINROT AUTO-ZIP"
 Title.Size = UDim2.new(1, 0, 0, 40)
-Title.TextColor3 = Color3.fromRGB(0, 255, 255)
-Title.Font = Enum.Font.SourceSansBold
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
 
 StatusLabel.Parent = MainFrame
-StatusLabel.Text = "Set Base before stealing!"
-StatusLabel.Position = UDim2.new(0, 0, 0.85, 0)
+StatusLabel.Text = "Status: Not Connected"
+StatusLabel.Position = UDim2.new(0, 0, 0.8, 0)
 StatusLabel.Size = UDim2.new(1, 0, 0, 30)
-StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+StatusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 
--- Set Base Button
-SetBaseBtn.Parent = MainFrame
-SetBaseBtn.Text = "STEP 1: SET BASE POS"
-SetBaseBtn.Size = UDim2.new(0.8, 0, 0, 40)
-SetBaseBtn.Position = UDim2.new(0.1, 0, 0.2, 0)
-SetBaseBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+-- Button 1: Find My Base
+AutoDetectBtn.Parent = MainFrame
+AutoDetectBtn.Text = "FIND MY BASE"
+AutoDetectBtn.Size = UDim2.new(0.8, 0, 0, 40)
+AutoDetectBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
+AutoDetectBtn.BackgroundColor3 = Color3.fromRGB(70, 0, 130)
 
--- Auto Steal & Zip Button
-ZipStealBtn.Parent = MainFrame
-ZipStealBtn.Text = "STEP 2: STEAL & ZIP"
-ZipStealBtn.Size = UDim2.new(0.8, 0, 0, 40)
-ZipStealBtn.Position = UDim2.new(0.1, 0, 0.4, 0)
-ZipStealBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+-- Button 2: Steal & Zip
+StealZipBtn.Parent = MainFrame
+StealZipBtn.Text = "STEAL & ZIP HOME"
+StealZipBtn.Size = UDim2.new(0.8, 0, 0, 40)
+StealZipBtn.Position = UDim2.new(0.1, 0, 0.5, 0)
+StealZipBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
 
--- Lag/Fake Ping Button
-LagTrailBtn.Parent = MainFrame
-LagTrailBtn.Text = "LAG TRAIL: OFF"
-LagTrailBtn.Size = UDim2.new(0.8, 0, 0, 40)
-LagTrailBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
-LagTrailBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
-
--- Functionality
-SetBaseBtn.MouseButton1Click:Connect(function()
-    BaseLocation = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    StatusLabel.Text = "Base Set! Ready to Zip."
-    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+-- Function: Find the Player's Base
+AutoDetectBtn.MouseButton1Click:Connect(function()
+    StatusLabel.Text = "Scanning Bases..."
+    -- Scans Workspace for the folder usually containing bases
+    local bases = workspace:FindFirstChild("Bases") or workspace:FindFirstChild("Plots")
+    
+    if bases then
+        for _, base in pairs(bases:GetChildren()) do
+            -- Looks for a base with your name or ID on it
+            if base:FindFirstChild("Owner") and base.Owner.Value == game.Players.LocalPlayer.Name then
+                MyBasePart = base:FindFirstChild("MainPart") or base:FindFirstChild("Floor")
+                StatusLabel.Text = "Base Found: " .. base.Name
+                StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+                return
+            end
+        end
+    end
+    
+    -- Backup: If no owner tag is found, it uses your current position as "Base"
+    MyBasePart = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+    StatusLabel.Text = "Manual Base Set (Stand at Base!)"
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
 end)
 
-ZipStealBtn.MouseButton1Click:Connect(function()
-    if not BaseLocation then
-        StatusLabel.Text = "ERROR: Set Base first!"
+-- Function: Zip Back
+StealZipBtn.MouseButton1Click:Connect(function()
+    if not MyBasePart then
+        StatusLabel.Text = "ERROR: Find Base First!"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
         return
     end
     
-    StatusLabel.Text = "Stealing Brainrot..."
-    task.wait(0.5) -- Simulated steal time
+    StatusLabel.Text = "Stealing & Zipping..."
+    task.wait(0.1) -- Minimal delay for "Fast" return
     
-    -- Fast Teleport Back
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = BaseLocation
-    StatusLabel.Text = "ZIP SUCCESS: Returned to Base"
-end)
-
-LagTrailBtn.MouseButton1Click:Connect(function()
-    LagActive = not LagActive
-    if LagActive then
-        LagTrailBtn.Text = "LAG TRAIL: ON"
-        LagTrailBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-        task.spawn(function()
-            while LagActive do
-                -- This creates a "stutter" effect for others
-                game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = true
-                task.wait(0.1)
-                game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
-                task.wait(0.2)
-            end
-        end)
+    -- Teleport logic
+    local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
+    if typeof(MyBasePart) == "Instance" then
+        hrp.CFrame = MyBasePart.CFrame + Vector3.new(0, 3, 0)
     else
-        LagTrailBtn.Text = "LAG TRAIL: OFF"
-        LagTrailBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
+        hrp.CFrame = MyBasePart
     end
+    
+    StatusLabel.Text = "Zipped Home Safely!"
 end)
