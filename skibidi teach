@@ -1,57 +1,80 @@
--- 99 Nights in the Forest: Diamond Hunter
+-- Playground Basketball: Baller Menu
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
+local AutoShootBtn = Instance.new("TextButton")
+local AutoDunkBtn = Instance.new("TextButton")
 local Status = Instance.new("TextLabel")
-local CollectBtn = Instance.new("TextButton")
 
 -- UI Setup
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 20, 40)
-MainFrame.Size = UDim2.new(0, 250, 0, 150)
-MainFrame.Position = UDim2.new(0.5, -125, 0.5, -75)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Size = UDim2.new(0, 250, 0, 220)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -110)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
 Title.Parent = MainFrame
-Title.Text = "DIAMOND HUNTER"
+Title.Text = "BALLER MENU V1"
 Title.Size = UDim2.new(1, 0, 0, 40)
-Title.TextColor3 = Color3.fromRGB(0, 255, 255)
-Title.Font = Enum.Font.GothamBold
+Title.TextColor3 = Color3.fromRGB(255, 165, 0) -- Basketball Orange
+Title.Font = Enum.Font.SourceSansBold
 
 Status.Parent = MainFrame
-Status.Text = "Waiting..."
-Status.Position = UDim2.new(0, 0, 0.7, 0)
+Status.Text = "Status: Ready"
+Status.Position = UDim2.new(0, 0, 0.8, 0)
 Status.Size = UDim2.new(1, 0, 0, 30)
 Status.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-CollectBtn.Parent = MainFrame
-CollectBtn.Text = "TP TO DIAMONDS"
-CollectBtn.Size = UDim2.new(0.8, 0, 0, 40)
-CollectBtn.Position = UDim2.new(0.1, 0, 0.35, 0)
-CollectBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+-- Auto Shoot / Aimlock Button
+AutoShootBtn.Parent = MainFrame
+AutoShootBtn.Text = "PERFECT AIMLOCK (SHOOT)"
+AutoShootBtn.Size = UDim2.new(0.8, 0, 0, 40)
+AutoShootBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
+AutoShootBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
 
--- Logic to find and TP to Diamond Nodes
-CollectBtn.MouseButton1Click:Connect(function()
-    local found = false
-    Status.Text = "Scanning Forest..."
-    
+-- Auto Dunk Button
+AutoDunkBtn.Parent = MainFrame
+AutoDunkBtn.Text = "INSTANT DUNK"
+AutoDunkBtn.Size = UDim2.new(0.8, 0, 0, 40)
+AutoDunkBtn.Position = UDim2.new(0.1, 0, 0.5, 0)
+AutoDunkBtn.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+
+-- Logic
+local function getHoop()
+    -- Attempts to find the closest basketball hoop
     for _, v in pairs(workspace:GetDescendants()) do
-        -- Searches for parts named Diamond or DiamondNode
-        if (v.Name:find("Diamond") or v.Name:find("Gem")) and v:IsA("BasePart") then
-            found = true
-            Status.Text = "Diamond Found! Teleporting..."
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0, 3, 0)
-            task.wait(1) -- Wait to mine
+        if v.Name == "Hoop" or v.Name == "Rim" or v.Name == "SwishPart" then
+            return v
         end
     end
-    
-    if not found then
-        Status.Text = "No Diamonds found right now."
-        Status.TextColor3 = Color3.fromRGB(255, 100, 100)
+    return nil
+end
+
+AutoShootBtn.MouseButton1Click:Connect(function()
+    local hoop = getHoop()
+    if hoop then
+        Status.Text = "Aiming at Hoop..."
+        -- Force the camera/character to face the hoop for a green release
+        game.Workspace.CurrentCamera.CFrame = CFrame.new(game.Workspace.CurrentCamera.CFrame.Position, hoop.Position)
+        task.wait(0.1)
+        Status.Text = "SHOT LOCKED"
     else
-        Status.Text = "Finished Scan."
-        Status.TextColor3 = Color3.fromRGB(0, 255, 0)
+        Status.Text = "No Hoop Found!"
+    end
+end)
+
+AutoDunkBtn.MouseButton1Click:Connect(function()
+    local hoop = getHoop()
+    if hoop then
+        Status.Text = "Teleporting to Dunk..."
+        local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
+        -- Zips you directly to the rim for a 100% dunk
+        hrp.CFrame = hoop.CFrame + Vector3.new(0, 5, 0)
+        task.wait(0.5)
+        Status.Text = "DUNK COMPLETE"
+    else
+        Status.Text = "No Hoop Found!"
     end
 end)
