@@ -1,81 +1,48 @@
--- Brainrot Stealer v4.2 (Fixed Steal + 5s Boomerang)
+-- 99 Nights in the Forest: Skibidi Teach V2 (Combat Update)
 local ScreenGui = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
+local Main = Instance.new("ScrollingFrame")
 local Title = Instance.new("TextLabel")
-local StatusLabel = Instance.new("TextLabel")
-local SetBaseBtn = Instance.new("TextButton")
-local BoomerangBtn = Instance.new("TextButton")
-
-local BaseLocation = nil
-local TargetLocation = nil
+local Layout = Instance.new("UIListLayout")
 
 -- UI Setup
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 0, 0) -- Deep Red
-MainFrame.Size = UDim2.new(0, 300, 0, 220)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -110)
-MainFrame.Active = true
-MainFrame.Draggable = true
+Main.Name = "SkibidiMenuV2"
+Main.Parent = ScreenGui
+Main.BackgroundColor3 = Color3.fromRGB(15, 15, 30)
+Main.Size = UDim2.new(0, 350, 0, 450)
+Main.Position = UDim2.new(0.5, -175, 0.5, -225)
+Main.CanvasSize = UDim2.new(0, 0, 2.5, 0)
+Main.Active = true
+Main.Draggable = true
 
-Title.Parent = MainFrame
-Title.Text = "BRAINROT STEALER V4.2"
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Font = Enum.Font.SourceSansBold
+Title.Parent = Main
+Title.Text = "SKIBIDI TEACH V2 + KILL AURA"
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.TextColor3 = Color3.fromRGB(255, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 
-StatusLabel.Parent = MainFrame
-StatusLabel.Text = "Ready to Steal"
-StatusLabel.Position = UDim2.new(0, 0, 0.8, 0)
-StatusLabel.Size = UDim2.new(1, 0, 0, 30)
-StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+Layout.Parent = Main
+Layout.Padding = UDim.new(0, 5)
 
--- Button: Set Base
-SetBaseBtn.Parent = MainFrame
-SetBaseBtn.Text = "1. SET BASE"
-SetBaseBtn.Size = UDim2.new(0.8, 0, 0, 40)
-SetBaseBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
-SetBaseBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+-- Helper to make buttons
+local function MakeButton(txt, color, callback)
+    local btn = Instance.new("TextButton")
+    btn.Parent = Main
+    btn.Text = txt
+    btn.Size = UDim2.new(0.9, 0, 0, 35)
+    btn.BackgroundColor3 = color
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
 
--- Button: Steal & Boomerang
-BoomerangBtn.Parent = MainFrame
-BoomerangBtn.Text = "2. START STEAL CYCLE"
-BoomerangBtn.Size = UDim2.new(0.8, 0, 0, 40)
-BoomerangBtn.Position = UDim2.new(0.1, 0, 0.55, 0)
-BoomerangBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+--- NEW COMBAT FEATURES ---
 
--- Functionality
-SetBaseBtn.MouseButton1Click:Connect(function()
-    BaseLocation = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-    StatusLabel.Text = "Base Saved!"
-    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-end)
-
-BoomerangBtn.MouseButton1Click:Connect(function()
-    if not BaseLocation then
-        StatusLabel.Text = "ERROR: Set Base first!"
-        return
-    end
-
-    local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
-    
-    -- STEP 1: Save the target spot and wait a second to make sure you grabbed it
-    StatusLabel.Text = "Grabbing Brainrot..."
-    TargetLocation = hrp.CFrame
-    task.wait(1.2) -- This gives the game time to "give" you the item
-    
-    -- STEP 2: Zip to Base to deposit
-    StatusLabel.Text = "Zipping to Base..."
-    hrp.CFrame = BaseLocation
-    
-    -- STEP 3: Wait 5 seconds at base
-    for i = 5, 1, -1 do
-        StatusLabel.Text = "Depositing... " .. i .. "s"
-        task.wait(1)
-    end
-    
-    -- STEP 4: Zip back to the target to get more
-    StatusLabel.Text = "Zipping back to Target..."
-    hrp.CFrame = TargetLocation
-    StatusLabel.Text = "Cycle Complete!"
-end)
+local killAuraActive = false
+MakeButton("AUTO-KILL ALL (AURA): OFF", Color3.fromRGB(150, 0, 0), function(self)
+    killAuraActive = not killAuraActive
+    if killAuraActive then
+        self.Text = "AUTO-KILL ALL (AURA): ON"
+        self.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        task
